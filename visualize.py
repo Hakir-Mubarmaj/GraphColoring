@@ -1,101 +1,37 @@
-import tkinter as tk
 import networkx as nx
 import matplotlib.pyplot as plt
-from graph import Graph
-from bfs import bfs
-from collections import deque
-from dfs import dfs
-from backtracking import graph_coloring_backtracking
+import numpy as np
 
-def visualize_bfs(graph, start):
+def visualize_graph(graph, path=None):
+    """
+    Visualize the graph using matplotlib and networkx.
+    Optionally, highlight the path if provided.
+    """
     G = nx.Graph()
 
+    # Add edges to the graph
     for node in graph.get_nodes():
-        G.add_node(node)
+        for neighbor, cost in graph.get_neighbors(node, with_cost=True):
+            G.add_edge(node, neighbor, weight=cost)
 
-    for node in graph.get_nodes():
-        for neighbor in graph.get_neighbors(node):
-            G.add_edge(node, neighbor)
+    pos = nx.spring_layout(G)  # Position nodes using a spring layout
 
-    pos = nx.spring_layout(G)
-    
-    # BFS Visualization
-    visited = set()
-    queue = deque([start])
-    visited.add(start)
+    # Draw nodes and edges
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10)
 
-    while queue:
-        node = queue.popleft()
-        nx.draw(G, pos, with_labels=True, nodelist=visited, node_color='skyblue', node_size=2000, font_size=15)
-        plt.title(f'BFS: Visiting node {node}')
-        plt.pause(1)
+    # Highlight the path if provided
+    if path:
+        edges_in_path = [(path[i], path[i+1]) for i in range(len(path)-1)]
+        
+        # Filter only valid edges that exist in the graph
+        valid_edges_in_path = [(u, v) for u, v in edges_in_path if u in pos and v in pos]
 
-        for neighbor in graph.get_neighbors(node):
-            if neighbor not in visited:
-                visited.add(neighbor)
-                queue.append(neighbor)
+        # Highlight the valid edges
+        if valid_edges_in_path:
+            nx.draw_networkx_edges(G, pos, edgelist=valid_edges_in_path, edge_color='r', width=2)
+
+    # Display edge weights (costs)
+    edge_labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
 
     plt.show()
-    
-def visualize_dfs(graph, start, visited=None, pos=None, G=None):
-    if visited is None:
-        visited = set()
-        G = nx.Graph()
-        for node in graph.get_nodes():
-            G.add_node(node)
-        for node in graph.get_nodes():
-            for neighbor in graph.get_neighbors(node):
-                G.add_edge(node, neighbor)
-        pos = nx.spring_layout(G)
-    
-    visited.add(start)
-    nx.draw(G, pos, with_labels=True, nodelist=visited, node_color='skyblue', node_size=2000, font_size=15)
-    plt.title(f'DFS: Visiting node {start}')
-    plt.pause(1)
-
-    for neighbor in graph.get_neighbors(start):
-        if neighbor not in visited:
-            visualize_dfs(graph, neighbor, visited, pos, G)
-            
-def visualize_coloring(graph, colors, available_colors):
-    G = nx.Graph()
-
-    for node in graph.get_nodes():
-        G.add_node(node)
-
-    for node in graph.get_nodes():
-        for neighbor in graph.get_neighbors(node):
-            G.add_edge(node, neighbor)
-
-    pos = nx.spring_layout(G)
-    
-    # Coloring visualization
-    for node in graph.get_nodes():
-        color_list = [colors[node] if colors[node] else 'white' for node in graph.get_nodes()]
-        nx.draw(G, pos, with_labels=True, node_color=color_list, node_size=2000, font_size=15)
-        plt.title(f'Graph Coloring: Node {node} assigned {colors[node]}')
-        plt.pause(1)
-
-    plt.show()
-
-def visualize_graph():
-    graph = Graph()
-    graph.add_edge(0, 1)
-    graph.add_edge(0, 2)
-    graph.add_edge(1, 3)
-    graph.add_edge(1, 4)
-    
-    # visualize_bfs(graph, 0)
-    # visualize_dfs(graph, 0)
-
-    available_colors = ['Red', 'Green', 'Blue']
-    colors = {node: None for node in graph.get_nodes()}
-
-    # Backtracking for coloring
-    if graph_coloring_backtracking(graph, colors, 0, available_colors):
-        visualize_coloring(graph, colors, available_colors)
-    else:
-        print("No solution found.")
-
-if __name__ == "__main__":
-    visualize_graph()
