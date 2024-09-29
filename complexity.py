@@ -1,41 +1,19 @@
 import math
 from graph1 import Graph
 
-def bfs_dfs_complexity(V, E):
-    """
-    Time Complexity for BFS/DFS is O(V + E)
-    """
-    complexity = V + E
-    print(f"BFS/DFS Time Complexity: O(V + E) = O({V} + {E}) = O({complexity})")
+def bfs_complexity(b, d):
+    complexity = math.pow(b, d)
+    print(f"BFS Time Complexity: O(b^d) = O({b}^{d}) = O({int(complexity)})")
     return complexity
 
-def graph_coloring_backtracking_complexity(V, m):
-    """
-    Time Complexity for Graph Coloring with Backtracking is O(m^V)
-    """
-    complexity = math.pow(m, V)
-    print(f"Graph Coloring (Backtracking) Time Complexity: O(m^V) = O({m}^{V}) = O({int(complexity)})")
-    return complexity
-
-def graph_coloring_forward_checking_complexity(V, m):
-    """
-    Time Complexity for Graph Coloring with Forward Checking is close to O(m^V)
-    """
-    complexity = math.pow(m, V)
-    print(f"Graph Coloring (Forward Checking) Time Complexity: O(m^V) = O({m}^{V}) = O({int(complexity)})")
-    return complexity
-
-def arc_consistency_complexity(V, E):
-    """
-    Time Complexity for Arc Consistency is O(V^2 * E) (in general case)
-    """
-    complexity = math.pow(V, 2) * E
-    print(f"Arc Consistency Time Complexity: O(V^2 * E) = O({V}^2 * {E}) = O({int(complexity)})")
+def dfs_complexity(b, m):
+    complexity = math.pow(b, m)
+    print(f"DFS Time Complexity: O(b^m) = O({b}^{m}) = O({int(complexity)})")
     return complexity
 
 def ucs_complexity(V, E):
     complexity = (V + E) * math.log(V)
-    print(f"UCS Time Complexity: O((V + E) log V) = O(({V} + {E}) log {V}) = O({int(complexity)})")
+    print(f"UCS Time Complexity: Number of nodes with g(n) <= C*")
     return complexity
 
 def ids_complexity(b, d):
@@ -43,15 +21,16 @@ def ids_complexity(b, d):
     print(f"IDS Time Complexity: O(b^d) = O({b}^{d}) = O({int(complexity)})")
     return complexity
 
-def greedy_complexity(V, E):
-    complexity = (V + E) * math.log(V)
-    print(f"Greedy Time Complexity: O((V + E) log V) = O(({V} + {E}) log {V}) = O({int(complexity)})")
-    return complexity
+def greedy_complexity(b, d, m):
+    worst_case = math.pow(b, m)
+    best_case = math.pow(b, d)
+    print(f"Greedy Time Complexity (Worst Case): O(b^m) = O({b}^{m}) = O({int(worst_case)})")
+    print(f"Greedy Time Complexity (Best Case): O(b^d) = O({b}^{d}) = O({int(best_case)})")
+    return worst_case, best_case
 
 def a_star_complexity(V, E):
-    complexity = (V + E) * math.log(V)
-    print(f"A* Time Complexity: O((V + E) log V) = O(({V} + {E}) log {V}) = O({int(complexity)})")
-    return complexity
+    print(f"A* Time Complexity: Number of nodes with g(n) + h(n) <= C*")
+    return (V + E) * math.log(V)
 
 def dijkstra_complexity(V, E):
     complexity = (V + E) * math.log(V)
@@ -63,7 +42,7 @@ def calculate_branching_factor(graph):
     total_nodes = len(graph.get_nodes())
     
     for node in graph.get_nodes():
-        neighbors = graph.get_neighbors(node)  # This will return a list of neighbors
+        neighbors = graph.get_neighbors(node)
         total_neighbors += len(neighbors)
     
     if total_nodes == 0:
@@ -91,10 +70,8 @@ def bfs_with_depth(graph, start, goal):
     return -1  # Return -1 if no path is found
 
 def main():
-    # Example graph size for complexity analysis
     V = 5  # Number of vertices (nodes)
-    E = 4  # Number of edges
-    m = 3  # Number of available colors
+    E = 6  # Number of edges
     
     graph = Graph()
     graph.add_edge(0, 1, 1)
@@ -108,32 +85,30 @@ def main():
     goal_node = 4
     b = calculate_branching_factor(graph)
     d = bfs_with_depth(graph, start_node, goal_node)
+    m = 5  # Maximum path length for DFS and Greedy Worst-case
 
     print("\n--- Complexity Calculations ---")
     
-    # BFS and DFS Time Complexity
-    bfs_dfs_complexity(V, E)
+    # BFS Time Complexity
+    bfs_complexity(b, d)
 
-    # Graph Coloring with Backtracking Time Complexity
-    graph_coloring_backtracking_complexity(V, m)
+    # DFS Time Complexity
+    dfs_complexity(b, m)
 
-    # Graph Coloring with Forward Checking Time Complexity
-    graph_coloring_forward_checking_complexity(V, m)
-
-    # Arc Consistency Time Complexity
-    arc_consistency_complexity(V, E)
-    
+    # UCS Time Complexity
     ucs_complexity(V, E)
     
+    # IDS Time Complexity
     ids_complexity(b, d)
     
-    greedy_complexity(V, E)
+    # Greedy Time Complexity
+    greedy_complexity(b, d, m)
     
+    # A* Time Complexity
     a_star_complexity(V, E)
     
+    # Dijkstra Time Complexity
     dijkstra_complexity(V, E)
-    
-    
 
 if __name__ == "__main__":
     main()
